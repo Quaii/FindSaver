@@ -1,0 +1,25 @@
+{
+  "name": "webscraper",
+  "version": "1.0.0",
+  "description": "Web application for scraping websites and displaying content in a card-based interface",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "keywords": [
+    "web-scraper",
+    "react",
+    "node",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
+    "concurrently": "^8.2.0"
+  }
+}
