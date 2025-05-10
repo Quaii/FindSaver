@@ -5,15 +5,31 @@ const config: ThemeConfig = {
   useSystemColorMode: false,
 };
 
-// WeChat color palette
+// Enhanced WeChat color palette
 const colors = {
   wechat: {
     primary: '#07C160', // Primary green
+    primaryDark: '#06A050', // Darker shade for hover states
+    primaryLight: '#E8F8F0', // Light green for backgrounds
     darkGray: '#7F7F7F', // Dark UI gray
     lightGray: '#EDEDED', // Light UI gray
     ultraLightGray: '#F7F7F7', // Ultra-light UI gray
     black: '#000000', // Black
     white: '#FFFFFF', // White
+    border: {
+      light: '#EDEDED',
+      dark: 'rgba(255, 255, 255, 0.1)'
+    },
+    card: {
+      light: '#FFFFFF',
+      dark: 'rgba(255, 255, 255, 0.05)'
+    },
+    text: {
+      secondary: {
+        light: '#7F7F7F',
+        dark: 'rgba(255, 255, 255, 0.7)'
+      }
+    }
   },
 };
 
@@ -21,18 +37,25 @@ const colors = {
 const styles = {
   global: (props: { colorMode: string }) => ({
     ':root': {
-      '--wechat-primary': '#07C160',
-      '--wechat-dark-gray': '#7F7F7F',
-      '--wechat-light-gray': '#EDEDED',
-      '--wechat-ultra-light-gray': '#F7F7F7',
-      '--wechat-black': '#000000',
-      '--wechat-white': '#FFFFFF',
+      '--wechat-primary': colors.wechat.primary,
+      '--wechat-primary-dark': colors.wechat.primaryDark,
+      '--wechat-primary-light': colors.wechat.primaryLight,
+      '--wechat-dark-gray': colors.wechat.darkGray,
+      '--wechat-light-gray': colors.wechat.lightGray,
+      '--wechat-ultra-light-gray': colors.wechat.ultraLightGray,
+      '--wechat-black': colors.wechat.black,
+      '--wechat-white': colors.wechat.white,
+      '--wechat-border': props.colorMode === 'dark' ? colors.wechat.border.dark : colors.wechat.border.light,
+      '--wechat-card-bg': props.colorMode === 'dark' ? colors.wechat.card.dark : colors.wechat.card.light,
+      '--wechat-secondary-text': props.colorMode === 'dark' ? colors.wechat.text.secondary.dark : colors.wechat.text.secondary.light,
     },
     body: {
       bg: props.colorMode === 'dark' ? 'wechat.black' : 'wechat.white',
       color: props.colorMode === 'dark' ? 'wechat.white' : 'wechat.black',
       fontSize: '16px',
+      lineHeight: '1.5',
       fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      transition: 'background-color 0.2s, color 0.2s',
     },
   }),
 };
@@ -43,6 +66,7 @@ const theme = extendTheme({
   colors,
   styles,
   components: {
+    
     // Button component styling
     Button: {
       baseStyle: {
@@ -50,6 +74,9 @@ const theme = extendTheme({
         borderRadius: '4px',
         fontSize: '16px',
         transition: 'all 0.2s',
+        _focus: {
+          boxShadow: '0 0 0 2px var(--wechat-primary-light)',
+        },
       },
       variants: {
         // Primary button (green with white text)
@@ -57,12 +84,12 @@ const theme = extendTheme({
           bg: 'wechat.primary',
           color: 'wechat.white',
           _hover: {
-            bg: 'wechat.primary',
-            opacity: 0.9,
+            bg: 'wechat.primaryDark',
+            transform: 'translateY(-1px)',
           },
           _active: {
-            bg: 'wechat.primary',
-            opacity: 0.8,
+            bg: 'wechat.primaryDark',
+            transform: 'translateY(0)',
           },
         },
         // Secondary button (gray outline)
@@ -71,10 +98,15 @@ const theme = extendTheme({
           color: (props: { colorMode: string }) => 
             props.colorMode === 'dark' ? 'wechat.white' : 'wechat.darkGray',
           border: '1px solid',
-          borderColor: 'wechat.darkGray',
+          borderColor: (props: { colorMode: string }) => 
+            props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'wechat.darkGray',
           _hover: {
             bg: (props: { colorMode: string }) => 
               props.colorMode === 'dark' ? 'whiteAlpha.100' : 'wechat.ultraLightGray',
+            transform: 'translateY(-1px)',
+          },
+          _active: {
+            transform: 'translateY(0)',
           },
         },
       },
@@ -89,7 +121,7 @@ const theme = extendTheme({
         field: {
           borderRadius: '4px',
           fontSize: '16px',
-          _placeholder: { color: 'wechat.darkGray' },
+          _placeholder: { color: 'var(--wechat-secondary-text)' },
         },
       },
       variants: {
@@ -98,15 +130,18 @@ const theme = extendTheme({
             bg: props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'wechat.white',
             border: '1px solid',
             borderColor: props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'wechat.lightGray',
-            _hover: {
-              borderColor: props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'wechat.darkGray',
-            },
             _focus: {
               borderColor: 'wechat.primary',
               boxShadow: '0 0 0 1px var(--wechat-primary)',
             },
+            _hover: {
+              borderColor: props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'wechat.darkGray',
+            },
           },
         }),
+      },
+      defaultProps: {
+        variant: 'outline',
       },
     },
     
@@ -114,11 +149,29 @@ const theme = extendTheme({
     Card: {
       baseStyle: (props: { colorMode: string }) => ({
         container: {
+          backgroundColor: props.colorMode === 'dark' ? 'wechat.card.dark' : 'wechat.card.light',
           borderRadius: '8px',
-          boxShadow: 'sm',
-          overflow: 'hidden',
-          bg: props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'wechat.white',
-          borderColor: props.colorMode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'wechat.lightGray',
+          border: '1px solid',
+          borderColor: props.colorMode === 'dark' ? 'wechat.border.dark' : 'wechat.border.light',
+          boxShadow: props.colorMode === 'dark' ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.05)',
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          _hover: {
+            transform: 'translateY(-2px)',
+            boxShadow: props.colorMode === 'dark' ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.1)',
+          },
+        },
+        body: {
+          padding: '16px',
+        },
+        header: {
+          padding: '16px',
+          borderBottom: '1px solid',
+          borderColor: props.colorMode === 'dark' ? 'wechat.border.dark' : 'wechat.border.light',
+        },
+        footer: {
+          padding: '16px',
+          borderTop: '1px solid',
+          borderColor: props.colorMode === 'dark' ? 'wechat.border.dark' : 'wechat.border.light',
         },
       }),
     },

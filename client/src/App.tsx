@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Box, useToast, ChakraProvider } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import theme from './theme';
@@ -12,7 +12,6 @@ import DashboardPage from './pages/DashboardPage';
 import CollectionPage from './pages/CollectionPage';
 import ItemDetailPage from './pages/ItemDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
-import WeChatUIDemo from './components/WeChatUIDemo';
 
 // Components
 import Navbar from './components/layout/Navbar';
@@ -51,7 +50,7 @@ function App() {
     <ChakraProvider theme={theme}>
       <Box minH="100vh" display="flex" flexDirection="column">
         <Navbar />
-      <Box flex="1" py={8} px={4}>
+      <Box flex="1" pb="80px" py={8} px={4}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -61,7 +60,7 @@ function App() {
               <DashboardPage />
             </PrivateRoute>
           } />
-          <Route path="/collections/:collectionName" element={
+          <Route path="/collections/:collectionId" element={
             <PrivateRoute>
               <CollectionPage />
             </PrivateRoute>
@@ -71,9 +70,7 @@ function App() {
               <ItemDetailPage />
             </PrivateRoute>
           } />
-          <Route path="/404" element={<NotFoundPage />} />
-          <Route path="/wechat-ui" element={<WeChatUIDemo />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Box>
         <Footer />

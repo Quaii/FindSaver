@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -25,6 +25,8 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  useColorMode,
+  Tooltip,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -33,6 +35,8 @@ import {
   ChevronRightIcon,
   SearchIcon,
   AddIcon,
+  MoonIcon,
+  SunIcon,
 } from '@chakra-ui/icons';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../store';
@@ -45,7 +49,39 @@ const Navbar = () => {
   const { searchQuery } = useSelector((state: RootState) => state.ui);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  // location is not used
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  const { colorMode, toggleColorMode } = useColorMode();
+  
+  // WeChat theme colors
+  const bgColor = useColorModeValue('wechat.white', 'wechat.black');
+  const borderColor = useColorModeValue('wechat.lightGray', 'rgba(255, 255, 255, 0.1)');
+  const textColor = useColorModeValue('wechat.black', 'wechat.white');
+  const secondaryTextColor = useColorModeValue('wechat.darkGray', 'rgba(255, 255, 255, 0.7)');
+  const searchBgColor = useColorModeValue('wechat.ultraLightGray', 'rgba(255, 255, 255, 0.1)');
+  
+  // Apply blurred effect for the navbar on scroll
+  const [scrolled, setScrolled] = useState(false);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  // Navbar blur effect style
+  const navbarStyle = {
+    backdropFilter: scrolled ? 'blur(10px)' : 'none',
+    WebkitBackdropFilter: scrolled ? 'blur(10px)' : 'none',
+    transition: 'all 0.3s ease-in-out',
+    boxShadow: scrolled ? '0 2px 10px rgba(0, 0, 0, 0.05)' : 'none',
+    borderBottom: '1px solid',
+    borderColor: borderColor,
+    backgroundColor: scrolled ? (colorMode === 'light' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)') : bgColor,
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -58,21 +94,15 @@ const Navbar = () => {
   };
 
   return (
-    <Box>
+    <Box position="sticky" top={0} zIndex={100}>
       <Flex
-        bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
+        bg={bgColor}
+        color={textColor}
         minH={'60px'}
         py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={useColorModeValue('gray.200', 'gray.900')}
+        px={{ base: 4, md: 6 }}
         align={'center'}
-        position="sticky"
-        top={0}
-        zIndex={1000}
-        boxShadow="sm"
+        sx={navbarStyle}
       >
         <Flex
           flex={{ base: 1, md: 'auto' }}
@@ -89,17 +119,21 @@ const Navbar = () => {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-            fontFamily={'heading'}
-            color={useColorModeValue('brand.600', 'wechat.green')}
-            fontWeight="bold"
-            fontSize="xl"
+          <Link
             as={RouterLink}
             to="/"
+            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+            fontFamily={'heading'}
+            color={textColor}
+            fontWeight="bold"
+            fontSize="xl"
+            _hover={{
+              textDecoration: 'none',
+              color: 'wechat.primary'
+            }}
           >
             FindSaver
-            </Text>
+          </Link>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav isAuthenticated={isAuthenticated} />
@@ -117,13 +151,21 @@ const Navbar = () => {
             <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: '400px' }}>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <SearchIcon color="gray.300" />
+                  <SearchIcon color={secondaryTextColor} />
                 </InputLeftElement>
                 <Input
                   placeholder="Search items..."
                   value={localSearchQuery}
                   onChange={(e) => setLocalSearchQuery(e.target.value)}
                   borderRadius="full"
+                  bg={searchBgColor}
+                  _focus={{
+                    borderColor: 'wechat.primary',
+                    boxShadow: '0 0 0 1px var(--wechat-primary)',
+                  }}
+                  _hover={{
+                    borderColor: 'wechat.primary',
+                  }}
                 />
               </InputGroup>
             </form>
@@ -132,7 +174,9 @@ const Navbar = () => {
               leftIcon={<AddIcon />}
               onClick={() => dispatch(openScraperModal())}
               size="sm"
-              colorScheme="brand"
+              bg="wechat.primary"
+              color="white"
+              _hover={{ bg: 'wechat.primaryDark' }}
               variant="solid"
               display={{ base: 'none', md: 'flex' }}
             >
@@ -142,7 +186,9 @@ const Navbar = () => {
             <Button
               onClick={() => dispatch(openCollectionModal())}
               size="sm"
-              colorScheme="brand"
+              borderColor="wechat.primary"
+              color={useColorModeValue('wechat.primary', 'wechat.primary')}
+              _hover={{ bg: useColorModeValue('wechat.primaryLight', 'rgba(7, 193, 96, 0.1)') }}
               variant="outline"
               display={{ base: 'none', md: 'flex' }}
             >
@@ -180,27 +226,46 @@ const Navbar = () => {
             justify={'flex-end'}
             direction={'row'}
             spacing={6}
+            align="center"
           >
+            <Tooltip label={colorMode === 'light' ? 'Dark mode' : 'Light mode'}>
+              <IconButton
+                aria-label="Toggle color mode"
+                icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                onClick={toggleColorMode}
+                variant="ghost"
+                size="sm"
+                borderRadius="full"
+                color={secondaryTextColor}
+                _hover={{
+                  bg: useColorModeValue('wechat.ultraLightGray', 'rgba(255, 255, 255, 0.1)')
+                }}
+              />
+            </Tooltip>
             <Button
               as={RouterLink}
+              to="/login"
               fontSize={'sm'}
-              fontWeight={400}
-              variant={'link'}
-              to={'/login'}
+              fontWeight={500}
+              variant={'ghost'}
+              color={textColor}
+              _hover={{
+                bg: useColorModeValue('wechat.ultraLightGray', 'rgba(255, 255, 255, 0.1)')
+              }}
+              size="sm"
             >
               Sign In
             </Button>
             <Button
               as={RouterLink}
+              to="/register"
               display={{ base: 'none', md: 'inline-flex' }}
               fontSize={'sm'}
-              fontWeight={600}
-              color={'white'}
-              bg={'brand.500'}
-              to={'/register'}
-              _hover={{
-                bg: 'brand.600',
-              }}
+              fontWeight={500}
+              bg="wechat.primary"
+              color="white"
+              _hover={{ bg: 'wechat.primaryDark' }}
+              size="sm"
             >
               Sign Up
             </Button>
@@ -216,9 +281,9 @@ const Navbar = () => {
 };
 
 const DesktopNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
-  const linkColor = useColorModeValue('gray.600', 'gray.200');
-  const linkHoverColor = useColorModeValue('brand.800', 'white');
-  const popoverContentBgColor = useColorModeValue('white', 'gray.800');
+  const linkColor = useColorModeValue('wechat.darkGray', 'rgba(255, 255, 255, 0.7)');
+  const linkHoverColor = useColorModeValue('wechat.primary', 'wechat.primary');
+  const popoverContentBgColor = useColorModeValue('wechat.white', 'wechat.black');
 
   return (
     <Stack direction={'row'} spacing={4}>
@@ -300,13 +365,13 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       display={'block'}
       p={2}
       rounded={'md'}
-      _hover={{ bg: useColorModeValue('brand.50', 'gray.900') }}
+      _hover={{ bg: useColorModeValue('wechat.ultraLightGray', 'rgba(255, 255, 255, 0.05)') }}
     >
       <Stack direction={'row'} align={'center'}>
         <Box>
           <Text
             transition={'all .3s ease'}
-            _groupHover={{ color: 'brand.500' }}
+            _groupHover={{ color: 'wechat.primary' }}
             fontWeight={500}
           >
             {label}
@@ -322,7 +387,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           align={'center'}
           flex={1}
         >
-          <Icon color={'brand.500'} w={5} h={5} as={ChevronRightIcon} />
+          <Icon color={'wechat.primary'} w={5} h={5} as={ChevronRightIcon} />
         </Flex>
       </Stack>
     </Link>
@@ -331,12 +396,16 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 
 const MobileNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   const dispatch = useAppDispatch();
+  const borderColor = useColorModeValue('wechat.lightGray', 'rgba(255, 255, 255, 0.1)');
   
   return (
     <Stack
-      bg={useColorModeValue('white', 'gray.800')}
+      bg={useColorModeValue('wechat.white', 'wechat.black')}
       p={4}
       display={{ md: 'none' }}
+      borderBottomWidth="1px"
+      borderColor={borderColor}
+      boxShadow="0 2px 10px rgba(0, 0, 0, 0.05)"
     >
       {isAuthenticated && (
         <>
@@ -346,7 +415,9 @@ const MobileNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
               leftIcon={<AddIcon />}
               onClick={() => dispatch(openScraperModal())}
               size="sm"
-              colorScheme="brand"
+              bg="wechat.primary"
+              color="white"
+              _hover={{ bg: 'wechat.primaryDark' }}
               variant="solid"
               width="full"
             >
@@ -355,7 +426,9 @@ const MobileNav = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
             <Button
               onClick={() => dispatch(openCollectionModal())}
               size="sm"
-              colorScheme="brand"
+              borderColor="wechat.primary"
+              color={useColorModeValue('wechat.primary', 'wechat.primary')}
+              _hover={{ bg: useColorModeValue('wechat.primaryLight', 'rgba(7, 193, 96, 0.1)') }}
               variant="outline"
               width="full"
             >
@@ -388,7 +461,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
       >
         <Text
           fontWeight={600}
-          color={useColorModeValue('gray.600', 'gray.200')}
+          color={useColorModeValue('wechat.darkGray', 'rgba(255, 255, 255, 0.7)')}
         >
           {label}
         </Text>
@@ -409,7 +482,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
           pl={4}
           borderLeft={1}
           borderStyle={'solid'}
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
+          borderColor={useColorModeValue('wechat.lightGray', 'rgba(255, 255, 255, 0.1)')}
           align={'start'}
         >
           {children &&
