@@ -34,11 +34,34 @@ app.use('/api/convert', convertRoutes);
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+  // Check for Render.com environment
+  const clientPath = process.env.RENDER ? '/opt/render/project/src/client/dist' : path.join(__dirname, '../client/dist');
   
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
+  // Add a health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok' });
   });
+
+  // Add a status endpoint for auth service
+  app.get('/api/auth/status', (req, res) => {
+    res.json({ status: 'ok' });
+  });
+
+  // Ensure the client directory exists before serving static files
+  const fs = require('fs');
+  if (fs.existsSync(clientPath)) {
+    app.use(express.static(clientPath));
+    
+    app.get('*', (req, res) => {
+      res.sendFile(path.resolve(clientPath, 'index.html'));
+    });
+  } else {
+    console.warn(`Static file directory not found: ${clientPath}`);
+    // Handle API routes only if client directory doesn't exist
+    app.get('*', (req, res) => {
+      res.status(404).json({ message: 'Frontend not deployed. Please access the API endpoints directly.' });
+    });
+  }
 }
 
 // Error handling middleware
