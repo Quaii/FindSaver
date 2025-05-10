@@ -17,7 +17,7 @@ const Footer = () => {
         justify={{ base: 'center', md: 'space-between' }}
         align={{ base: 'center', md: 'center' }}
       >
-        <Text>© {new Date().getFullYear()} TaoBao Scraper. All rights reserved</Text>
+        <Text>© {new Date().getFullYear()} FindSaver. All rights reserved</Text>
         <Stack direction={'row'} spacing={6}>
           <Link href={'#'}>Privacy</Link>
           <Link href={'#'}>Terms</Link>

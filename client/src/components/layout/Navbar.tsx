@@ -92,14 +92,14 @@ const Navbar = () => {
           <Text
             textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
             fontFamily={'heading'}
-            color={useColorModeValue('brand.600', 'white')}
+            color={useColorModeValue('brand.600', 'wechat.green')}
             fontWeight="bold"
             fontSize="xl"
             as={RouterLink}
             to="/"
           >
-            TaoBao Scraper
-          </Text>
+            FindSaver
+            </Text>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav isAuthenticated={isAuthenticated} />

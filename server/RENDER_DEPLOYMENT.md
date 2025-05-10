@@ -40,6 +40,51 @@ And your start command should be:
 cd server && node index.js
 ```
 
+## MongoDB Atlas Configuration
+
+### Environment Variables
+
+Ensure your MongoDB connection string is properly configured in your Render environment variables:
+
+1. In your Render dashboard, navigate to your service
+2. Go to the "Environment" tab
+3. Add or update the `MONGODB_URI` environment variable with your MongoDB Atlas connection string
+4. Make sure to include your username, password, and database name in the connection string
+5. Click "Save Changes" and deploy your service again
+
+### IP Whitelisting
+
+If you encounter a MongoDB connection error like this:
+
+```
+MongooseServerSelectionError: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted.
+```
+
+You need to whitelist Render's IP addresses in your MongoDB Atlas configuration:
+
+1. Log in to your [MongoDB Atlas account](https://cloud.mongodb.com/)
+2. Navigate to your project and select "Network Access" under the Security section
+3. Click "Add IP Address"
+4. For Render deployments, you have two options:
+   - **Option 1 (Recommended)**: Add Render's IP addresses specifically
+     - Find your Render service's outbound IP addresses in the Render dashboard under your service's "Outbound IPs" section
+     - Add each IP address individually to the MongoDB Atlas whitelist
+     - You can find these IPs in the Render dashboard by going to your service → Settings → Outbound IPs
+   - **Option 2**: Allow access from anywhere (less secure, only for development)
+     - Add `0.0.0.0/0` to allow connections from any IP address
+     - Note: This is not recommended for production environments due to security concerns
+5. Save your changes
+
+#### Temporary Access Options
+
+MongoDB Atlas also supports creating temporary IP access list entries that expire after a configurable period (up to 7 days). This can be useful for testing:
+
+1. When adding an IP address, check the "Temporary" option
+2. Set an expiration time (from 1 hour up to 7 days)
+3. Add a comment to identify the purpose of this temporary access
+
+After whitelisting the appropriate IP addresses, restart your Render service for the changes to take effect.
+
 ## API Access
 
 Even if the frontend is not deployed, all API endpoints will continue to function correctly. You can access them directly at:

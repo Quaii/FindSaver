@@ -22,22 +22,9 @@ import {
   HStack,
   Text,
   Switch,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
   InputGroup,
   InputRightElement,
   Box,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Textarea,
-  Badge,
 } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../store';
@@ -52,8 +39,8 @@ const ScraperModal = () => {
   const { collections, loading, error } = useSelector((state: RootState) => state.items);
   
   const [url, setUrl] = useState('');
-  const [bulkUrls, setBulkUrls] = useState('');
-  const [isBulkMode, setIsBulkMode] = useState(false);
+  // Removed bulk conversion feature as it's not needed
+  // Bulk mode has been completely removed
   const [collection, setCollection] = useState('');
   const [useJavaScript, setUseJavaScript] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -62,14 +49,12 @@ const ScraperModal = () => {
   const [collectionError, setCollectionError] = useState('');
   const [convertedUrl, setConvertedUrl] = useState('');
   const [isConverting, setIsConverting] = useState(false);
-  const [conversionResults, setConversionResults] = useState<Array<{originalUrl: string, convertedUrl: string | null, isValid: boolean, isConvertible: boolean}>>([]);
+  // Bulk functionality has been completely removed
 
   // Reset form when modal opens
   useEffect(() => {
     if (isScraperModalOpen) {
       setUrl('');
-      setBulkUrls('');
-      setIsBulkMode(false);
       setCollection(collections.length > 0 ? collections[0].name : '');
       setUseJavaScript(false);
       setTags([]);
@@ -77,14 +62,13 @@ const ScraperModal = () => {
       setUrlError('');
       setCollectionError('');
       setConvertedUrl('');
-      setConversionResults([]);
     }
   }, [isScraperModalOpen, collections]);
   
   // Function to convert a single URL
   const handleConvertUrl = async () => {
     if (!url.trim()) {
-      setUrlError('URL is required');
+      setUrlError('Paste any Taobao or agent URL and our tool will convert it to CSS by format and extract all relevant product information.');
       return;
     }
     
@@ -115,41 +99,7 @@ const ScraperModal = () => {
     }
   };
   
-  // Function to convert bulk URLs
-  const handleBulkConvert = async () => {
-    if (!bulkUrls.trim()) {
-      setUrlError('Please enter at least one URL');
-      return;
-    }
-    
-    const urlList = bulkUrls.split('\n').filter(u => u.trim());
-    
-    setIsConverting(true);
-    try {
-      const response = await fetch('/api/convert/bulk', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ urls: urlList }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setConversionResults(data.results);
-        setUrlError('');
-      } else {
-        setUrlError(data.message || 'Failed to convert URLs');
-        setConversionResults([]);
-      }
-    } catch (err) {
-      setUrlError('Error converting URLs');
-      setConversionResults([]);
-    } finally {
-      setIsConverting(false);
-    }
-  };
+  // Bulk conversion feature removed as requested
 
   const handleClose = () => {
     dispatch(closeScraperModal());
@@ -177,23 +127,14 @@ const ScraperModal = () => {
     let isValid = true;
 
     // Validate URL
-    if (isBulkMode) {
-      if (!bulkUrls.trim()) {
-        setUrlError('Please enter at least one URL');
-        isValid = false;
-      } else {
-        setUrlError('');
-      }
+    if (!url.trim()) {
+      setUrlError('URL is required');
+      isValid = false;
+    } else if (!url.match(/^(http|https):\/\/[^ "]+$/)) {
+      setUrlError('Please enter a valid URL');
+      isValid = false;
     } else {
-      if (!url.trim()) {
-        setUrlError('URL is required');
-        isValid = false;
-      } else if (!url.match(/^(http|https):\/\/[^ "]+$/)) {
-        setUrlError('Please enter a valid URL');
-        isValid = false;
-      } else {
-        setUrlError('');
-      }
+      setUrlError('');
     }
 
     // Validate collection
@@ -211,35 +152,15 @@ const ScraperModal = () => {
     if (!validateForm()) return;
 
     try {
-      if (isBulkMode) {
-        // Handle bulk scraping
-        const urlList = bulkUrls.split('\n').filter(u => u.trim());
-        
-        // For now, just scrape the first valid URL
-        // In a real implementation, you might want to queue these for processing
-        const validUrl = urlList.find(u => u.match(/^(http|https):\/\/[^ "]+$/));
-        
-        if (validUrl) {
-          await dispatch(scrapeUrl({
-            url: validUrl,
-            collection,
-            useJavaScript,
-            tags
-          }));
-        } else {
-          throw new Error('No valid URLs found');
-        }
-      } else {
-        // Use converted URL if available, otherwise use the original URL
-        const urlToScrape = convertedUrl || url;
-        
-        await dispatch(scrapeUrl({
-          url: urlToScrape,
-          collection,
-          useJavaScript,
-          tags
-        }));
-      }
+      // Use converted URL if available, otherwise use the original URL
+      const urlToScrape = convertedUrl || url;
+      
+      await dispatch(scrapeUrl({
+        url: urlToScrape,
+        collection,
+        useJavaScript,
+        tags
+      }));
       
       toast({
         title: 'Scraping started',
@@ -269,102 +190,37 @@ const ScraperModal = () => {
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
-            <Tabs isFitted variant="enclosed" onChange={(index) => setIsBulkMode(index === 1)}>
-              <TabList mb="1em">
-                <Tab>Single URL</Tab>
-                <Tab>Bulk Convert</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel p={0}>
-                  <FormControl isRequired isInvalid={!!urlError}>
-                    <FormLabel>URL to Scrape</FormLabel>
-                    <InputGroup>
-                      <Input 
-                        placeholder="https://item.taobao.com/item.htm?id=123456789" 
-                        value={url} 
-                        onChange={(e) => {
-                          setUrl(e.target.value);
-                          setConvertedUrl('');
-                        }}
-                      />
-                      <InputRightElement width="4.5rem">
-                        <Button 
-                          h="1.75rem" 
-                          size="sm" 
-                          onClick={handleConvertUrl}
-                          isLoading={isConverting}
-                        >
-                          Convert
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                    {urlError && <FormErrorMessage>{urlError}</FormErrorMessage>}
-                    {convertedUrl && (
-                      <Box mt={2} p={2} bg="gray.50" borderRadius="md">
-                        <Text fontSize="sm" fontWeight="bold">Converted URL:</Text>
-                        <Text fontSize="sm" wordBreak="break-all">{convertedUrl}</Text>
-                      </Box>
-                    )}
-                  </FormControl>
-                </TabPanel>
-                <TabPanel p={0}>
-                  <FormControl isRequired isInvalid={!!urlError}>
-                    <FormLabel>Bulk URLs (one per line)</FormLabel>
-                    <Textarea
-                      placeholder="https://item.taobao.com/item.htm?id=123456789\nhttps://item.taobao.com/item.htm?id=987654321"
-                      value={bulkUrls}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                        setBulkUrls(e.target.value);
-                        setConversionResults([]);
-                      }}
-                      minHeight="120px"
-                    />
-                    {urlError && <FormErrorMessage>{urlError}</FormErrorMessage>}
-                    <Button
-                      mt={2}
-                      onClick={handleBulkConvert}
-                      isLoading={isConverting}
-                      size="sm"
-                    >
-                      Convert All
-                    </Button>
-                    
-                    {conversionResults.length > 0 && (
-                      <Box mt={3} maxHeight="200px" overflowY="auto">
-                        <Table size="sm" variant="simple">
-                          <Thead>
-                            <Tr>
-                              <Th>Original URL</Th>
-                              <Th>Status</Th>
-                              <Th>Converted URL</Th>
-                            </Tr>
-                          </Thead>
-                          <Tbody>
-                            {conversionResults.map((result, index) => (
-                              <Tr key={index}>
-                                <Td fontSize="xs" maxWidth="150px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-                                  {result.originalUrl}
-                                </Td>
-                                <Td>
-                                  {result.isConvertible ? (
-                                    <Badge colorScheme="green">Success</Badge>
-                                  ) : (
-                                    <Badge colorScheme="red">Failed</Badge>
-                                  )}
-                                </Td>
-                                <Td fontSize="xs" maxWidth="150px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-                                  {result.convertedUrl || 'N/A'}
-                                </Td>
-                              </Tr>
-                            ))}
-                          </Tbody>
-                        </Table>
-                      </Box>
-                    )}
-                  </FormControl>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
+            <FormControl isRequired isInvalid={!!urlError}>
+              <FormLabel>URL to Scrape</FormLabel>
+              <InputGroup>
+                <Input 
+                  placeholder="Paste any Taobao or agent URL and our tool will convert it to CSS by format and extract all relevant product information" 
+                  value={url} 
+                  onChange={(e) => {
+                    setUrl(e.target.value);
+                    setConvertedUrl('');
+                  }}
+                  isDisabled={isConverting}
+                />
+                <InputRightElement width="4.5rem">
+                  <Button 
+                    h="1.75rem" 
+                    size="sm" 
+                    onClick={handleConvertUrl}
+                    isLoading={isConverting}
+                  >
+                    Convert
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              {urlError && <FormErrorMessage>{urlError}</FormErrorMessage>}
+              {convertedUrl && (
+                <Box mt={2} p={2} borderWidth="1px" borderRadius="md">
+                  <Text fontWeight="bold">Converted URL:</Text>
+                  <Text wordBreak="break-all">{convertedUrl}</Text>
+                </Box>
+              )}
+            </FormControl>
 
             <FormControl isRequired isInvalid={!!collectionError}>
               <FormLabel>Save to Collection</FormLabel>

@@ -27,18 +27,18 @@ const HomePage = () => {
               position={'relative'}
               color={'brand.400'}
             >
-              TaoBao Scraper
+              FindSaver
             </Text>
             <br />
             <Text as={'span'} color={'brand.600'}>
-              Collect & Organize Products
+              Save & Organize Your Finds
             </Text>
           </Heading>
           <Text color={'gray.500'}>
-            Easily convert and scrape product information from TaoBao and agent sites to CSSBuy. 
-            Our tool automatically converts links from various platforms, supports bulk conversion,
-            and saves product details, images, and prices in your personal collections.
-            Track prices and organize your shopping wishlist effortlessly.
+            Easily save and organize product information from TaoBao and agent sites. 
+            Our tool automatically converts links from various platforms and extracts all relevant product information,
+            allowing you to store your finds so you never forget what was shared with you.
+            Track products and organize your personal collection effortlessly.
           </Text>
           <Stack
             spacing={{ base: 4, sm: 6 }}
@@ -123,12 +123,12 @@ const HomePage = () => {
             <Feature
               icon={<Icon as={FiDatabase} w={10} h={10} />}
               title="Collections"
-              text="Organize scraped items into custom collections. Create public or private collections to share or keep for yourself."
+              text="Organize saved items into custom collections. Create collections to keep track of products you discover while browsing."
             />
             <Feature
               icon={<Icon as={FiTag} w={10} h={10} />}
-              title="Bulk Conversion"
-              text="Convert multiple TaoBao and agent links to CSSBuy format at once. Perfect for building collections from various sources."
+              title="Personal Storage"
+              text="Never forget what was shared with you. Save links and product details for future reference in your personal collection."
             />
           </SimpleGrid>
         </Box>
