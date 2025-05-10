@@ -79,6 +79,22 @@ body {
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
+  color: var(--wechat-text);
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+[data-theme="dark"] .wechat-card {
+  background-color: rgba(30, 30, 30, 0.95);
+  border-color: rgba(255,255,255,0.12);
+  color: var(--wechat-text);
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.32);
+}
+[data-theme="light"] .wechat-card {
+  background-color: var(--wechat-card-bg);
+  border-color: var(--wechat-border);
+  color: var(--wechat-text);
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06);
 }
 
 /* Inputs */

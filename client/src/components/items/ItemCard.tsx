@@ -31,11 +31,17 @@ const ItemCard = ({ item }: ItemCardProps) => {
       as={RouterLink}
       to={`/items/${item._id}`}
       borderWidth="1px"
-      borderRadius="lg"
+      borderRadius="xl"
       overflow="hidden"
       bg={cardBg}
-      transition="all 0.3s"
-      _hover={{ transform: 'translateY(-5px)', shadow: 'md' }}
+      transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
+      backdropFilter="blur(8px)"
+      boxShadow="0 4px 12px rgba(0, 0, 0, 0.05)"
+      _hover={{
+        transform: 'translateY(-4px) scale(1.02)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+        filter: 'brightness(1.05)'
+      }}
       height="100%"
       display="flex"
       flexDirection="column"
@@ -50,6 +56,8 @@ const ItemCard = ({ item }: ItemCardProps) => {
           src={item.images[0] || 'https://via.placeholder.com/300?text=No+Image'}
           alt={item.title}
           objectFit="cover"
+          transition="transform 0.4s ease-out"
+          _hover={{ transform: 'scale(1.05)' }}
         />
         <Stack
           position="absolute"
@@ -78,9 +86,18 @@ const ItemCard = ({ item }: ItemCardProps) => {
         </Stack>
       </Box>
 
-      <Box p="4" flex="1" display="flex" flexDirection="column">
+      <Box p="5" flex="1" display="flex" flexDirection="column" backdropFilter="blur(4px)">
         <Box display="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="brand">
+          <Badge 
+            borderRadius="full" 
+            px="3" 
+            py="1" 
+            colorScheme="brand"
+            fontSize="xs"
+            textTransform="uppercase"
+            letterSpacing="wider"
+            bg="wechat.primary"
+            color="white">
             {item.domain}
           </Badge>
         </Box>
