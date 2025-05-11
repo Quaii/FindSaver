@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
       default: false
     }
   }]
-}, { timestamps: true });
+}, { timestamps: true, suppressReservedKeysWarning: true });
 
 // Hash password before saving
 UserSchema.pre('save', async function(next) {

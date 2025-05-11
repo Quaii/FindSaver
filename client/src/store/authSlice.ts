@@ -44,17 +44,21 @@ const setAuthToken = (token: string | null) => {
 
 // Load user
 export const loadUser = createAsyncThunk('auth/loadUser', async (_, { rejectWithValue }) => {
-  const token = localStorage.getItem('token');
-  
-  if (token) {
-    setAuthToken(token);
-  }
-  
   try {
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return rejectWithValue('No token found');
+    }
+    
+    setAuthToken(token);
+
+    // Make request to auth endpoint
     const res = await api.get('/api/auth/me');
     return res.data;
   } catch (err: any) {
     setAuthToken(null);
+    localStorage.removeItem('token');
     return rejectWithValue(err.response?.data?.message || 'Failed to load user');
   }
 });
