@@ -4,6 +4,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
+// Import Render setup helper
+const renderSetup = require('./config/render-setup');
+
+// Configure for Render environment if needed
+renderSetup.setupRenderEnvironment();
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const scrapingRoutes = require('./routes/scraping');
@@ -12,7 +18,7 @@ const convertRoutes = require('./routes/convert');
 
 // Initialize express app
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000; // Default to port 10000 for Render
 
 // Middleware
 app.use(cors());
@@ -23,13 +29,21 @@ const connectDB = require('./config/db');
 
 // Connect to MongoDB
 if (process.env.RENDER) {
-  // Add retry logic for Render deployment
-  const connectWithRetry = async () => {
+  // Enhanced retry logic for Render deployment
+  const connectWithRetry = async (retryCount = 0, maxRetries = 5) => {
     try {
+      console.log(`MongoDB connection attempt ${retryCount + 1}/${maxRetries + 1}`);
       await connectDB();
     } catch (err) {
-      console.log('MongoDB connection failed, retrying in 5 seconds...');
-      setTimeout(connectWithRetry, 5000);
+      if (retryCount < maxRetries) {
+        const retryDelay = Math.min(5000 * Math.pow(1.5, retryCount), 30000); // Exponential backoff with 30s max
+        console.log(`MongoDB connection failed, retrying in ${retryDelay/1000} seconds...`);
+        console.log(`Error details: ${err.message}`);
+        setTimeout(() => connectWithRetry(retryCount + 1, maxRetries), retryDelay);
+      } else {
+        console.error('Maximum MongoDB connection attempts reached. Please check your connection string and network.');
+        // Continue app startup even if MongoDB fails - the app will handle missing DB gracefully
+      }
     }
   };
   connectWithRetry();
@@ -82,6 +96,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT} and host 0.0.0.0`);
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on port ${PORT} and host ${HOST}`);
+  console.log(`Render deployment: ${process.env.RENDER ? 'Yes' : 'No'}`);
 });

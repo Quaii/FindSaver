@@ -4,11 +4,13 @@
   "description": "Web application for scraping websites and displaying content in a card-based interface",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "cd server && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
-    "postinstall": "cd client && npm run postinstall"
+    "postinstall": "cd client && npm run postinstall",
+    "build": "cd client && npm run build"
   },
   "keywords": [
     "web-scraper",

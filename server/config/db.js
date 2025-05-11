@@ -7,13 +7,18 @@ const connectDB = async () => {
       throw new Error('MongoDB URI is not defined in environment variables');
     }
 
+    // Enhanced options for Render deployment
     const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: process.env.RENDER ? 30000 : 5000, // Longer timeout for Render
+      socketTimeoutMS: process.env.RENDER ? 60000 : 45000, // Longer timeout for Render
+      retryWrites: true,
+      w: 'majority',
+      maxPoolSize: 10,
     };
 
+    console.log('Connecting to MongoDB...');
     await mongoose.connect(mongoURI, options);
 
     const conn = mongoose.connection;
