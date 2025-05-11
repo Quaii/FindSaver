@@ -34,7 +34,7 @@ const RegisterPage = () => {
   
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { loading = false, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   // Redirect if already authenticated
   if (isAuthenticated) {

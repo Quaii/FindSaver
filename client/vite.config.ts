@@ -33,5 +33,10 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false
+  },
+  // Handle client-side routing
+  preview: {
+    port: 4173,
+    host: true
   }
 })
