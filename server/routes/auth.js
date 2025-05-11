@@ -16,7 +16,14 @@ router.post('/register', [
   // Validate request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    console.log('Validation errors:', errors.array());
+    return res.status(400).json({
+      message: 'Validation failed',
+      errors: errors.array().map(error => ({
+        field: error.param,
+        message: error.msg
+      }))
+    });
   }
 
   const { name, email, password } = req.body;
@@ -56,8 +63,14 @@ router.post('/register', [
       }
     );
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('Registration error:', err);
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Email address is already registered' });
+    }
+    res.status(500).json({
+      message: 'Registration failed',
+      error: err.message
+    });
   }
 });
 
@@ -71,7 +84,14 @@ router.post('/login', [
   // Validate request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    console.log('Validation errors:', errors.array());
+    return res.status(400).json({
+      message: 'Validation failed',
+      errors: errors.array().map(error => ({
+        field: error.param,
+        message: error.msg
+      }))
+    });
   }
 
   const { email, password } = req.body;
@@ -107,8 +127,14 @@ router.post('/login', [
       }
     );
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('Registration error:', err);
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Email address is already registered' });
+    }
+    res.status(500).json({
+      message: 'Registration failed',
+      error: err.message
+    });
   }
 });
 
@@ -120,8 +146,14 @@ router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('Registration error:', err);
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Email address is already registered' });
+    }
+    res.status(500).json({
+      message: 'Registration failed',
+      error: err.message
+    });
   }
 });
 
