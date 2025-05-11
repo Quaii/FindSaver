@@ -3,12 +3,25 @@ import { Link as RouterLink } from 'react-router-dom';
 import { FiDatabase, FiSearch, FiTag } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
+import { useColorModeValue } from '@chakra-ui/react';
 
 const HomePage = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   
   return (
-    <Container maxW={'7xl'} px={{ base: 4, md: 8 }} py={{ base: 10, md: 20 }} centerContent position="relative" sx={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderRadius: '3xl', boxShadow: '0 12px 40px rgba(31, 38, 135, 0.15)', background: 'rgba(255,255,255,0.8)', transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', _hover: { boxShadow: '0 16px 48px rgba(31, 38, 135, 0.2)', transform: 'translateY(-2px)' } }}>
+    <Container maxW={'7xl'} px={{ base: 4, md: 8 }} py={{ base: 10, md: 20 }} centerContent position="relative" sx={{ 
+  backdropFilter: 'blur(16px)', 
+  WebkitBackdropFilter: 'blur(16px)', 
+  borderRadius: '3xl', 
+  boxShadow: (props) => props.colorMode === 'dark' ? '0 12px 40px rgba(7, 193, 96, 0.2)' : '0 12px 40px rgba(7, 193, 96, 0.12)', 
+  background: (props) => props.colorMode === 'dark' ? 'rgba(26, 32, 44, 0.85)' : 'rgba(255, 255, 255, 0.9)', 
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', 
+  _hover: { 
+    boxShadow: (props) => props.colorMode === 'dark' ? '0 16px 48px rgba(7, 193, 96, 0.25)' : '0 16px 48px rgba(7, 193, 96, 0.18)', 
+    transform: 'translateY(-2px)' 
+  },
+  animation: 'fadeIn 0.8s ease-out'
+}}>
       {/* Hero Section */}
       <Stack
         align={'center'}
@@ -18,7 +31,8 @@ const HomePage = () => {
         position="relative"
         w="full"
         sx={{
-          animation: 'fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          animation: 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+          willChange: 'transform, opacity'
         }}
       >
         <Stack flex={1} spacing={{ base: 6, md: 10 }} px={{ base: 0, md: 8 }}>
@@ -41,7 +55,7 @@ const HomePage = () => {
               Save & Organize Your Finds
             </Text>
           </Heading>
-          <Text color={'wechat.darkGray'} fontSize={{ base: 'md', md: 'lg' }}>
+          <Text color={useColorModeValue('wechat.darkGray', 'wechat.ultraLightGray')} fontSize={{ base: 'md', md: 'lg' }}>
             Easily save and organize product information from TaoBao and agent sites. Our tool automatically converts links from various platforms and extracts all relevant product information, allowing you to store your finds so you never forget what was shared with you. Track products and organize your personal collection effortlessly.
           </Text>
           <Stack
@@ -131,7 +145,7 @@ const HomePage = () => {
             >
               Features
             </Heading>
-            <Text fontSize={{ base: 'md', md: 'xl' }} color={'wechat.darkGray'} maxW="3xl" mx="auto">
+            <Text fontSize={{ base: 'md', md: 'xl' }} color={useColorModeValue('wechat.darkGray', 'wechat.ultraLightGray')} maxW="3xl" mx="auto">
               Our web scraper provides powerful tools to help you collect and organize product information from various e-commerce websites.
             </Text>
           </Box>
@@ -167,7 +181,17 @@ interface FeatureProps {
 
 const Feature = ({ title, text, icon }: FeatureProps) => {
   return (
-    <Stack align={'center'} textAlign={'center'} spacing={6} px={4} py={6} sx={{ transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', borderRadius: '2xl', boxShadow: '0 4px 16px rgba(7,193,96,0.08)', _hover: { boxShadow: '0 8px 24px rgba(7,193,96,0.15)', transform: 'translateY(-4px) scale(1.02)' }, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)' }}>
+    <Stack align={'center'} textAlign={'center'} spacing={6} px={4} py={6} sx={{ 
+      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', 
+      borderRadius: '2xl', 
+      boxShadow: (props) => props.colorMode === 'dark' ? '0 4px 16px rgba(7,193,96,0.15)' : '0 4px 16px rgba(7,193,96,0.08)', 
+      _hover: { 
+        boxShadow: (props) => props.colorMode === 'dark' ? '0 8px 24px rgba(7,193,96,0.25)' : '0 8px 24px rgba(7,193,96,0.15)', 
+        transform: 'translateY(-4px) scale(1.02)' 
+      }, 
+      background: (props) => props.colorMode === 'dark' ? 'rgba(26, 32, 44, 0.85)' : 'rgba(255, 255, 255, 0.9)', 
+      backdropFilter: 'blur(8px)' 
+    }}>
       <Flex
         w={16}
         h={16}
@@ -182,7 +206,7 @@ const Feature = ({ title, text, icon }: FeatureProps) => {
         {icon}
       </Flex>
       <Text fontWeight={600} fontSize={{ base: 'lg', md: 'xl' }} color={'wechat.primary'}>{title}</Text>
-      <Text color={'wechat.darkGray'} fontSize={{ base: 'sm', md: 'md' }}>{text}</Text>
+      <Text color={useColorModeValue('wechat.darkGray', 'wechat.ultraLightGray')} fontSize={{ base: 'sm', md: 'md' }}>{text}</Text>
     </Stack>
   );
 };

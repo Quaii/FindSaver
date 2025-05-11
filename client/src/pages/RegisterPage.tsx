@@ -106,8 +106,29 @@ const RegisterPage = () => {
   };
 
   return (
-    <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '0', sm: '8' }}>
-      <Stack spacing="8">
+    <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '4', sm: '8' }} centerContent sx={{
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      borderRadius: '3xl',
+      boxShadow: (props) => props.colorMode === 'dark'
+        ? '0 12px 40px rgba(26, 173, 25, 0.15)'
+        : '0 12px 40px rgba(26, 173, 25, 0.1)',
+      bg: (props) => props.colorMode === 'dark'
+        ? 'wechat.card.dark'
+        : 'wechat.card.light',
+      color: (props) => props.colorMode === 'dark'
+        ? 'wechat.white'
+        : 'wechat.black',
+      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+      _hover: {
+        boxShadow: (props) => props.colorMode === 'dark'
+          ? '0 16px 48px rgba(26, 173, 25, 0.2)'
+          : '0 16px 48px rgba(26, 173, 25, 0.15)',
+        transform: 'translateY(-2px)'
+      },
+      animation: 'fadeIn 0.8s ease-out'
+    }}>
+      <Stack spacing="8" sx={{ animation: 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)', willChange: 'transform, opacity' }}>
         <Stack spacing="6">
           <Stack spacing={{ base: '2', md: '3' }} textAlign="center">
             <Heading size={{ base: 'xs', md: 'sm' }}>Create an account</Heading>
@@ -191,13 +212,19 @@ const RegisterPage = () => {
               
               <Stack spacing="6">
                 <Button
-                  type="submit"
-                  colorScheme="brand"
-                  isLoading={loading}
-                  loadingText="Creating account"
-                >
-                  Sign up
-                </Button>
+                type="submit"
+                bg="wechat.primary"
+                color="white"
+                _hover={{ bg: 'wechat.primaryDark' }}
+                _active={{ bg: 'wechat.primaryDark' }}
+                isLoading={loading}
+                loadingText="Creating account"
+                w="full"
+                fontSize="md"
+                h="12"
+              >
+                Create Account
+              </Button>
                 <HStack>
                   <Divider />
                   <Text fontSize="sm" whiteSpace="nowrap" color="fg.muted">

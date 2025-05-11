@@ -11,8 +11,9 @@ interface ItemCardProps {
 
 const ItemCard = ({ item }: ItemCardProps) => {
   const dispatch = useAppDispatch();
-  const cardBg = useColorModeValue('white', 'gray.800');
-  const textColor = useColorModeValue('gray.700', 'gray.200');
+  const cardBg = useColorModeValue('white', 'rgba(26, 32, 44, 0.95)');
+  const textColor = useColorModeValue('gray.700', 'gray.100');
+  const secondaryTextColor = useColorModeValue('gray.500', 'gray.400');
   
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -36,10 +37,16 @@ const ItemCard = ({ item }: ItemCardProps) => {
       bg={cardBg}
       transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
       backdropFilter="blur(8px)"
-      boxShadow="0 4px 12px rgba(0, 0, 0, 0.05)"
+      boxShadow={useColorModeValue(
+        '0 4px 12px rgba(0, 0, 0, 0.05)', 
+        '0 4px 12px rgba(0, 0, 0, 0.5)'
+      )}
       _hover={{
         transform: 'translateY(-4px) scale(1.02)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+        boxShadow: useColorModeValue(
+          '0 8px 24px rgba(0, 0, 0, 0.1)',
+          '0 8px 24px rgba(0, 0, 0, 0.6)'
+        ),
         filter: 'brightness(1.05)'
       }}
       height="100%"
@@ -118,7 +125,7 @@ const ItemCard = ({ item }: ItemCardProps) => {
         </Text>
 
         <Flex mt="auto" justify="space-between" align="center">
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color={secondaryTextColor}>
             {new Date(item.scrapedAt).toLocaleDateString()}
           </Text>
           <IconButton

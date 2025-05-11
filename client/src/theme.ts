@@ -8,27 +8,33 @@ const config: ThemeConfig = {
 // Enhanced WeChat color palette
 const colors = {
   wechat: {
-    primary: '#07C160', // Primary green
-    primaryDark: '#06A050', // Darker shade for hover states
+    primary: '#1AAD19', // Active tab green
+    primaryDark: '#148812', // Darker shade for hover states
     primaryLight: '#E8F8F0', // Light green for backgrounds
-    darkGray: '#7F7F7F', // Dark UI gray
-    lightGray: '#EDEDED', // Light UI gray
-    ultraLightGray: '#F7F7F7', // Ultra-light UI gray
-    black: '#000000', // Black
-    white: '#FFFFFF', // White
+    darkGray: '#8E8E93', // Inactive icons/tabs
+    lightGray: '#888888', // Secondary text
+    ultraLightGray: '#666666', // Disabled text
+    black: '#121212', // Dark mode background
+    white: '#FFFFFF', // Primary text light
     border: {
       light: '#EDEDED',
-      dark: 'rgba(255, 255, 255, 0.1)'
+      dark: '#1E1E1E'
     },
     card: {
       light: '#FFFFFF',
-      dark: 'rgba(255, 255, 255, 0.05)'
+      dark: '#242424'
     },
     text: {
       secondary: {
-        light: '#7F7F7F',
-        dark: 'rgba(255, 255, 255, 0.7)'
+        light: '#888888',
+        dark: '#AAAAAA'
       }
+    },
+    notification: '#FF3B30', // Red notification dot
+    official: '#007AFF', // Blue for official accounts
+    background: {
+      dark: '#121212',
+      light: '#F5F5F5'
     }
   },
 };
@@ -153,11 +159,11 @@ const theme = extendTheme({
           borderRadius: '8px',
           border: '1px solid',
           borderColor: props.colorMode === 'dark' ? 'wechat.border.dark' : 'wechat.border.light',
-          boxShadow: props.colorMode === 'dark' ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.05)',
+          boxShadow: props.colorMode === 'dark' ? '0 2px 8px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.05)',
           transition: 'transform 0.2s, box-shadow 0.2s',
           _hover: {
             transform: 'translateY(-2px)',
-            boxShadow: props.colorMode === 'dark' ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.1)',
+            boxShadow: props.colorMode === 'dark' ? '0 4px 16px rgba(0, 0, 0, 0.4)' : '0 4px 12px rgba(0, 0, 0, 0.1)',
           },
         },
         body: {
