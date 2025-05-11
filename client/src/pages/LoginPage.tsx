@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -27,16 +27,17 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);  // Add loading state
+  const { error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [showLoginError, setShowLoginError] = useState(false);
   const dispatch = useAppDispatch();
-  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
 
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    navigate('/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const validateForm = () => {
     let isValid = true;
@@ -68,41 +69,23 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowLoginError(true);
     
     if (!validateForm()) return;
     
     try {
+      setIsLoading(true);  // Set loading state before login attempt
       await dispatch(login({ email, password }));
-      // Navigation will happen automatically due to the redirect in the component
     } catch (err) {
-      // Error is handled by the auth slice and displayed via the error state
+      // Error is handled by the auth slice
+    } finally {
+      setIsLoading(false);  // Reset loading state after login attempt
     }
   };
 
   return (
-    <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '4', md: '8' }} centerContent position="relative" sx={{ 
-      backdropFilter: 'blur(16px)', 
-      WebkitBackdropFilter: 'blur(16px)', 
-      borderRadius: '3xl', 
-      boxShadow: (props) => props.colorMode === 'dark' 
-        ? '0 12px 40px rgba(26, 173, 25, 0.15)'
-        : '0 12px 40px rgba(26, 173, 25, 0.1)', 
-      bg: (props) => props.colorMode === 'dark'
-        ? 'wechat.card.dark'
-        : 'wechat.card.light',
-      color: (props) => props.colorMode === 'dark'
-        ? 'wechat.white'
-        : 'wechat.black',
-      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', 
-      _hover: { 
-        boxShadow: (props) => props.colorMode === 'dark'
-          ? '0 16px 48px rgba(26, 173, 25, 0.2)'
-          : '0 16px 48px rgba(26, 173, 25, 0.15)', 
-        transform: 'translateY(-2px)' 
-      },
-      animation: 'fadeIn 0.8s ease-out'
-    }}>
-      <Stack spacing="8" sx={{ animation: 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)', willChange: 'transform, opacity' }}>
+    <Container maxW="lg" py={{ base: '12', md: '24' }} px={{ base: '4', md: '8' }} centerContent>
+      <Stack spacing="8">
         <Stack spacing="6">
           <Stack spacing={{ base: '2', md: '3' }} textAlign="center">
             <Heading size={{ base: 'xs', md: 'sm' }}>Log in to your account</Heading>
@@ -120,7 +103,7 @@ const LoginPage = () => {
             border='1px solid'
             borderColor={useColorModeValue('wechat.border.light', 'wechat.border.dark')}
           >
-          {error && (
+          {error && showLoginError && (  // Only show error if showLoginError is true
             <Alert status="error" mb={4} borderRadius="md">
               <AlertIcon />
               {error}
@@ -169,7 +152,7 @@ const LoginPage = () => {
                   color="white"
                   _hover={{ bg: 'wechat.primaryDark' }}
                   _active={{ bg: 'wechat.primaryDark' }}
-                  isLoading={loading}
+                  isLoading={isLoading}  // Use the new loading state
                   loadingText="Signing in"
                   w="full"
                   fontSize="md"
