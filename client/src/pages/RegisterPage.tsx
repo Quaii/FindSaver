@@ -34,7 +34,7 @@ const RegisterPage = () => {
   
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading = false, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   // Redirect if already authenticated
   if (isAuthenticated) {
@@ -166,6 +166,7 @@ const RegisterPage = () => {
                       setName(e.target.value);
                       dispatch(clearError());
                     }}
+                    isDisabled={loading}
                   />
                   {nameError && <FormErrorMessage>{nameError}</FormErrorMessage>}
                 </FormControl>
@@ -180,6 +181,7 @@ const RegisterPage = () => {
                       setEmail(e.target.value);
                       dispatch(clearError());
                     }}
+                    isDisabled={loading}
                   />
                   {emailError && <FormErrorMessage>{emailError}</FormErrorMessage>}
                 </FormControl>
@@ -194,6 +196,7 @@ const RegisterPage = () => {
                       setPassword(e.target.value);
                       dispatch(clearError());
                     }}
+                    isDisabled={loading}
                   />
                   {passwordError && <FormErrorMessage>{passwordError}</FormErrorMessage>}
                 </FormControl>
@@ -208,6 +211,7 @@ const RegisterPage = () => {
                       setConfirmPassword(e.target.value);
                       dispatch(clearError());
                     }}
+                    isDisabled={loading}
                   />
                   {confirmPasswordError && <FormErrorMessage>{confirmPasswordError}</FormErrorMessage>}
                 </FormControl>

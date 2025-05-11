@@ -12,9 +12,10 @@ const __dirname = path.dirname(__filename);
 // Function to check if a package is installed
 const isPackageInstalled = (packageName) => {
   try {
-    // Check in node_modules
-    const packagePath = path.join(__dirname, 'node_modules', packageName);
-    return fs.existsSync(packagePath);
+    // Check in both local and parent node_modules
+    const localPackagePath = path.join(__dirname, 'node_modules', packageName);
+    const parentPackagePath = path.join(__dirname, '..', 'node_modules', packageName);
+    return fs.existsSync(localPackagePath) || fs.existsSync(parentPackagePath);
   } catch (error) {
     return false;
   }
@@ -35,7 +36,10 @@ try {
   let esbuildPackage = '';
   
   // Map common platforms and architectures to esbuild packages
-  if (platform === 'linux' && arch === 'x64') {
+  const isRenderDeploy = process.env.RENDER === 'true';
+  
+  // Force linux-x64 on Render deployment, otherwise use local platform
+  if (isRenderDeploy || (platform === 'linux' && arch === 'x64')) {
     esbuildPackage = '@esbuild/linux-x64';
   } else if (platform === 'darwin' && arch === 'x64') {
     esbuildPackage = '@esbuild/darwin-x64';
