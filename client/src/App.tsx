@@ -27,14 +27,19 @@ function App() {
   const toast = useToast();
   const { error } = useSelector((state: RootState) => state.auth);
 
-  // Load user on app load if token exists
+  // Load user on app load if token exists and not on public routes
   useEffect(() => {
-    dispatch(loadUser());
+    const token = localStorage.getItem('token');
+    const isPublicRoute = ['/login', '/register', '/'].includes(window.location.pathname);
+    if (token && !isPublicRoute) {
+      dispatch(loadUser());
+    }
   }, [dispatch]);
 
-  // Show error toast when auth error occurs
+  // Show error toast when auth error occurs, but not on public routes
   useEffect(() => {
-    if (error) {
+    const isPublicRoute = ['/login', '/register', '/'].includes(window.location.pathname);
+    if (error && !isPublicRoute) {
       toast({
         title: 'Authentication Error',
         description: error,
