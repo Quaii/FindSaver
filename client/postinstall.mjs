@@ -38,8 +38,8 @@ try {
   // Map common platforms and architectures to esbuild packages
   const isRenderDeploy = process.env.RENDER === 'true';
   
-  // Force linux-x64 on Render deployment, otherwise use local platform
-  if (isRenderDeploy || (platform === 'linux' && arch === 'x64')) {
+  // Force linux-x64 on Render deployment
+  if (process.env.RENDER === 'true') {
     esbuildPackage = '@esbuild/linux-x64';
   } else if (platform === 'darwin' && arch === 'x64') {
     esbuildPackage = '@esbuild/darwin-x64';

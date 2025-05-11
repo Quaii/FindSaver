@@ -22,7 +22,20 @@ app.use(express.json());
 const connectDB = require('./config/db');
 
 // Connect to MongoDB
-connectDB();
+if (process.env.RENDER) {
+  // Add retry logic for Render deployment
+  const connectWithRetry = async () => {
+    try {
+      await connectDB();
+    } catch (err) {
+      console.log('MongoDB connection failed, retrying in 5 seconds...');
+      setTimeout(connectWithRetry, 5000);
+    }
+  };
+  connectWithRetry();
+} else {
+  connectDB();
+}
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -69,6 +82,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT} and host 0.0.0.0`);
 });
