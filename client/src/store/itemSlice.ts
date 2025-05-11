@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../services/api';
 
 // Types
 export interface Item {
@@ -48,7 +48,7 @@ interface CreateCollectionParams {
 // Fetch all items
 export const fetchItems = createAsyncThunk('items/fetchItems', async (_, { rejectWithValue }) => {
   try {
-    const res = await axios.get('/api/scrape');
+    const res = await api.get('/api/scrape');
     return res.data;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || 'Failed to fetch items');
@@ -60,7 +60,7 @@ export const fetchItemsByCollection = createAsyncThunk(
   'items/fetchItemsByCollection',
   async (collection: string, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/scrape/collections/${collection}`);
+      const res = await api.get(`/api/scrape/collections/${collection}`);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch collection items');
@@ -73,7 +73,7 @@ export const fetchItem = createAsyncThunk(
   'items/fetchItem',
   async (id: string, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/scrape/${id}`);
+      const res = await api.get(`/api/scrape/${id}`);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch item');
@@ -86,7 +86,7 @@ export const scrapeUrl = createAsyncThunk(
   'items/scrapeUrl',
   async (params: ScrapeUrlParams, { rejectWithValue }) => {
     try {
-      const res = await axios.post('/api/scrape', params);
+      const res = await api.post('/api/scrape', params);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to scrape URL');
@@ -99,7 +99,7 @@ export const deleteItem = createAsyncThunk(
   'items/deleteItem',
   async (id: string, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/scrape/${id}`);
+      await api.delete(`/api/scrape/${id}`);
       return id;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete item');
@@ -112,7 +112,7 @@ export const toggleFavorite = createAsyncThunk(
   'items/toggleFavorite',
   async (id: string, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/api/scrape/${id}/favorite`);
+      const res = await api.put(`/api/scrape/${id}/favorite`);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to update favorite status');
@@ -125,7 +125,7 @@ export const fetchCollections = createAsyncThunk(
   'items/fetchCollections',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get('/api/users/collections');
+      const res = await api.get('/api/users/collections');
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to fetch collections');
@@ -138,7 +138,7 @@ export const createCollection = createAsyncThunk(
   'items/createCollection',
   async (params: CreateCollectionParams, { rejectWithValue }) => {
     try {
-      const res = await axios.post('/api/users/collections', params);
+      const res = await api.post('/api/users/collections', params);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to create collection');
@@ -151,7 +151,7 @@ export const deleteCollection = createAsyncThunk(
   'items/deleteCollection',
   async (name: string, { rejectWithValue }) => {
     try {
-      const res = await axios.delete(`/api/users/collections/${name}`);
+      const res = await api.delete(`/api/users/collections/${name}`);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete collection');

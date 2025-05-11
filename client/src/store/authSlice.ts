@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../services/api';
 
 // Types
 interface User {
@@ -34,10 +34,10 @@ interface RegisterCredentials extends LoginCredentials {
 // Set token in headers
 const setAuthToken = (token: string | null) => {
   if (token) {
-    axios.defaults.headers.common['x-auth-token'] = token;
+    api.defaults.headers.common['x-auth-token'] = token;
     localStorage.setItem('token', token);
   } else {
-    delete axios.defaults.headers.common['x-auth-token'];
+    delete api.defaults.headers.common['x-auth-token'];
     localStorage.removeItem('token');
   }
 };
@@ -51,7 +51,7 @@ export const loadUser = createAsyncThunk('auth/loadUser', async (_, { rejectWith
   }
   
   try {
-    const res = await axios.get('/api/auth/me');
+    const res = await api.get('/api/auth/me');
     return res.data;
   } catch (err: any) {
     setAuthToken(null);
@@ -64,7 +64,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (credentials: RegisterCredentials, { rejectWithValue }) => {
     try {
-      const res = await axios.post('/api/auth/register', credentials);
+      const res = await api.post('/api/auth/register', credentials);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Registration failed');
@@ -77,7 +77,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const res = await axios.post('/api/auth/login', credentials);
+      const res = await api.post('/api/auth/login', credentials);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Login failed');

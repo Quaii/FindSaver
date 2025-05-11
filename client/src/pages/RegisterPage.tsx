@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../store';
-import { register, clearError } from '../store/authSlice';
+import { register, clearError, loadUser } from '../store/authSlice';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -98,8 +98,11 @@ const RegisterPage = () => {
     if (!validateForm()) return;
     
     try {
-      await dispatch(register({ name, email, password }));
-      navigate('/login');
+      const result = await dispatch(register({ name, email, password })).unwrap();
+      if (result.token) {
+        // If registration is successful and returns a token, load the user data
+        await dispatch(loadUser());
+      }
     } catch (err) {
       // Error is handled by the auth slice and displayed via the error state
     }
